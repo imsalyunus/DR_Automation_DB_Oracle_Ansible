@@ -1,24 +1,23 @@
 # Step by Step Manual Data Guard Switchover #
-## 1. Pastikan Anda sudah login sebagai user oracle dan memuat profile environment: ##
+## 1. Pastikan sudah login sebagai user oracle dan memuat profile environment: ##
 `su - oracle`  
 `. .bash_profile`
 
 3. Pastikan listener dalam keadaan aktif:
-lsnrctl start
+`lsnrctl start`
 
 4. Masuk ke SQL*Plus:
-sqlplus / as sysdba
+`sqlplus / as sysdba`
 
 5. Verifikasi Status Database:
-SELECT database_role, switchover_status FROM v$database;
+`SELECT database_role, switchover_status FROM v$database;`
 
 6. Di Standby, pastikan proses recovery sedang berjalan:
-ALTER DATABASE RECOVER MANAGED STANDBY DATABASE DISCONNECT;
+`ALTER DATABASE RECOVER MANAGED STANDBY DATABASE DISCONNECT;`
 
 7. Cek gap/lag antara Primary dan Standby dengan perintah berikut:
-SELECT inst_id, name, value FROM gv$dataguard_stats WHERE name='apply lag';
-
-*Di Primary, hasilnya harus "no rows selected"
+`SELECT inst_id, name, value FROM gv$dataguard_stats WHERE name='apply lag';`  
+*Di Primary, hasilnya harus "no rows selected"  
 *Di Standby, akan terlihat apply lag jika ada keterlambatan replikasi
 
 8. Sinkronisasi Archive Log:
