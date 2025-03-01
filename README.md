@@ -17,6 +17,8 @@
 
 ## 6. Cek gap/lag antara Primary dan Standby dengan perintah berikut: ##
 `SELECT inst_id, name, value FROM gv$dataguard_stats WHERE name='apply lag';`  
+![image](https://github.com/user-attachments/assets/c8fc1054-42a4-4a35-a6c5-8bc0c64a3c5b)
+![image](https://github.com/user-attachments/assets/aeeb29f7-29f3-41b9-b157-31b49f5235b9)
 *Di Primary, hasilnya harus "no rows selected"  
 *Di Standby, akan terlihat apply lag jika ada keterlambatan replikasi
 
@@ -63,15 +65,7 @@
 ## 19. Cek Lag di Standby yang Baru: ##
 `SELECT inst_id, name, value FROM gv$dataguard_stats WHERE name='apply lag';`
 
-
-
-Check database role and database name
-SELECT database_role, switchover_status from v$database;
-![image](https://github.com/user-attachments/assets/c8fc1054-42a4-4a35-a6c5-8bc0c64a3c5b)
-
-select inst_id, name, value from gv$dataguard_stats where name='apply lag';
-![image](https://github.com/user-attachments/assets/aeeb29f7-29f3-41b9-b157-31b49f5235b9)
-
+#########################################################
 Switchover adalah proses pembalikan peran secara terkontrol antara primary dan standby database dalam konfigurasi Oracle Data Guard. Operasi ini memastikan tidak ada kehilangan data (zero data loss) dan tetap menjaga integritas lingkungan Data Guard.
 
 Kapan Switchover Digunakan?
