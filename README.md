@@ -1,48 +1,48 @@
 Step by Step Manual Data Guard Switchover
 1. Pastikan Anda sudah login sebagai user oracle dan memuat profile environment:
-su - oracle
-. .bash_profile
-2. Pastikan listener dalam keadaan aktif:
+   su - oracle
+   . .bash_profile
+3. Pastikan listener dalam keadaan aktif:
 lsnrctl start
-3. Masuk ke SQL*Plus:
+4. Masuk ke SQL*Plus:
 sqlplus / as sysdba
-4. Verifikasi Status Database:
+5. Verifikasi Status Database:
 SELECT database_role, switchover_status FROM v$database;
-5. Di Standby, pastikan proses recovery sedang berjalan:
+6. Di Standby, pastikan proses recovery sedang berjalan:
 ALTER DATABASE RECOVER MANAGED STANDBY DATABASE DISCONNECT;
-6. Cek gap/lag antara Primary dan Standby dengan perintah berikut:
+7. Cek gap/lag antara Primary dan Standby dengan perintah berikut:
 SELECT inst_id, name, value FROM gv$dataguard_stats WHERE name='apply lag';
 *Di Primary, hasilnya harus "no rows selected"
 *Di Standby, akan terlihat apply lag jika ada keterlambatan replikasi
-7. Sinkronisasi Archive Log:
+8. Sinkronisasi Archive Log:
 ALTER SYSTEM ARCHIVE LOG CURRENT;
 ALTER SYSTEM ARCHIVE LOG CURRENT;
 ALTER SYSTEM ARCHIVE LOG CURRENT;
-8. Cek daftar archive log:
+9. Cek daftar archive log:
 ARCHIVE LOG LIST;
-9. Lakukan Switchover dari Primary ke Standby:
+10. Lakukan Switchover dari Primary ke Standby:
 ALTER DATABASE COMMIT TO SWITCHOVER TO STANDBY;
-10. Startup Mount di Standby yang Baru:
+11. Startup Mount di Standby yang Baru:
 STARTUP MOUNT;
-11. Verifikasi Status di Standby yang Baru:
+12. Verifikasi Status di Standby yang Baru:
 SELECT name, open_mode, database_role FROM v$database;
-12. Pastikan Standby Lama Siap Menjadi Primary:
+13. Pastikan Standby Lama Siap Menjadi Primary:
 SELECT database_role, switchover_status FROM v$database;
-13. Lakukan Switchover dari Standby ke Primary (di Standby Lama yang akan menjadi Primary):
+14. Lakukan Switchover dari Standby ke Primary (di Standby Lama yang akan menjadi Primary):
 ALTER DATABASE COMMIT TO SWITCHOVER TO PRIMARY;
-14. Open Database di Primary yang Baru:
+15. Open Database di Primary yang Baru:
 ALTER DATABASE OPEN;
-15. Konfigurasi Log Archive di Primary yang Baru:
+16. Konfigurasi Log Archive di Primary yang Baru:
 ALTER SYSTEM SET log_archive_dest_state_2=ENABLE SCOPE=BOTH;
-16. Konfigurasi Log Archive di Standby yang Baru:
+17. Konfigurasi Log Archive di Standby yang Baru:
 ALTER SYSTEM SET log_archive_dest_state_2=DEFER SCOPE=BOTH;
-17. Restart Managed Recovery Process (MRP) di Standby yang Baru:
+18. Restart Managed Recovery Process (MRP) di Standby yang Baru:
 ALTER DATABASE RECOVER MANAGED STANDBY DATABASE DISCONNECT FROM SESSION;
-18. Verifikasi Replikasi Primary ke Standby:
+19. Verifikasi Replikasi Primary ke Standby:
 ALTER SYSTEM ARCHIVE LOG CURRENT;
 ALTER SYSTEM ARCHIVE LOG CURRENT;
 ALTER SYSTEM ARCHIVE LOG CURRENT;
-19. Cek Lag di Standby yang Baru:
+20. Cek Lag di Standby yang Baru:
 SELECT inst_id, name, value FROM gv$dataguard_stats WHERE name='apply lag';
 
 
