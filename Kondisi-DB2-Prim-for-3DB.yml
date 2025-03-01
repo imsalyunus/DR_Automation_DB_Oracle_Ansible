@@ -1,0 +1,31 @@
+---
+- name: Cek kondisi DB2 primary
+  hosts: localhost
+  tasks:
+    - name: "Tampilkan data dari PRIMARY"
+      debug:
+        msg: "{{ primary_db }}"
+    - name: "Tampilkan data dari STANDBY1"
+      debug:
+        msg: "{{ standby1_db }}"
+
+    - name: "Tampilkan data dari STANDBY2"
+      debug:
+        msg: "{{ standby2_db }}"
+    - name: "Tampilkan data dari STANDBY3"
+      debug:
+        msg: "{{ standby3_db }}"
+
+    - name: "Cek apakah primary_db adalah ora19cdg02.bwok.org"
+      assert:
+        that:
+          - primary_db == 'ora19cdg02.bwok.org'
+        fail_msg: "Pengecekan gagal: primary_db bukan ora19cdg02.bwok.org"
+        success_msg: "Pengecekan berhasil: primary_db adalah ora19cdg02.bwok.org"
+
+    - name: "Cek isi dari STANDBY1 dan STANDBY3"
+      assert:
+        that:
+          - standby1_db | length > 0 or standby3_db | length > 0
+        fail_msg: "Pengecekan gagal: baik standby1_db maupun standby3_db kosong"
+        success_msg: "Pengecekan berhasil: salah satu dari standby1_db atau standby3_db memiliki isi"
