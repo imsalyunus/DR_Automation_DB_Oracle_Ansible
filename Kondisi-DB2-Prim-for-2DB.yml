@@ -1,0 +1,25 @@
+---
+- name: Cek DB1 Primary
+  hosts: localhost
+  tasks:
+    - name: "Tampilkan data dari PRIMARY"
+      debug:
+        msg: "{{ primary_db }}"
+
+    - name: "Tampilkan data dari STANDBY"
+      debug:
+        msg: "{{ standby_db }}"
+
+    - name: "Cek apakah primary_db adalah ora19cdg02.bwok.org"
+      assert:
+        that:
+          - primary_db == 'ora19cdg02.bwok.org'
+        fail_msg: "Pengecekan gagal: primary_db bukan ora19cdg02.bwok.org"
+        success_msg: "Pengecekan berhasil: primary_db adalah ora19cdg02.bwok.org"
+
+    - name: "Cek apakah standby_db adalah ora19cdg01.bwok.org"
+      assert:
+        that:
+          - standby_db == 'ora19cdg01.bwok.org'
+        fail_msg: "Pengecekan gagal: standby_db bukan ora19cdg01.bwok.org"
+        success_msg: "Pengecekan berhasil: standby_db adalah ora19cdg01.bwok.org"
