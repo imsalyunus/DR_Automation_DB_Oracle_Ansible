@@ -1,0 +1,27 @@
+---
+- hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: "Tampilkan data dari PRIMARY"
+      debug:
+        msg: "{{ primary_db }}"
+
+    - name: "Tampilkan data dari STANDBY1"
+      debug:
+        msg: "{{ standby2_db }}"
+
+    - name: "Mengisi variabel standby_db"
+      set_stats:
+        data:
+          standby_db: "{{ standby2_db }}"
+
+    - name: "Tampilkan data dari standby_db"
+      debug:
+        msg: "{{ standby_db }}"
+
+    - name: "Tampilkan semua artifact"
+      debug:
+        msg:
+          - "PRIMARY: {{ primary_db }}"
+          - "STANDBY2: {{ standby2_db }}"
+          - "STANDBY_DB: {{ standby_db }}"
