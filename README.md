@@ -1,4 +1,4 @@
-Step by Step Manual Data Guard Switchover
+# Step by Step Manual Data Guard Switchover
 1. Pastikan Anda sudah login sebagai user oracle dan memuat profile environment:
 su - oracle
 . .bash_profile
