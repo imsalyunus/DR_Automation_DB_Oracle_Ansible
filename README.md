@@ -1,6 +1,7 @@
 Switchover adalah proses pembalikan peran secara terkontrol antara primary dan standby database dalam konfigurasi Oracle Data Guard. Operasi ini memastikan tidak ada kehilangan data (zero data loss) dan tetap menjaga integritas lingkungan Data Guard.
 
 Kapan Switchover Digunakan?
+
 Switchover biasanya digunakan untuk pemeliharaan terencana pada primary database. Prosesnya melibatkan: 
 1. Mengubah primary database menjadi standby
 2. Melakukan pemeliharaan pada database yang sekarang menjadi standby
