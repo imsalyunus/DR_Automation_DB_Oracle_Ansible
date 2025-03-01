@@ -79,6 +79,7 @@
 ![image](https://github.com/user-attachments/assets/fa1d179c-f772-4d8d-8dfc-eb759d4872b0)
 
 #########################################################  
+# Switchover Process Automation for Oracle Data Guard #  
 Switchover adalah proses pembalikan peran secara terkontrol antara primary dan standby database dalam konfigurasi Oracle Data Guard. Operasi ini memastikan tidak ada kehilangan data (zero data loss) dan tetap menjaga integritas lingkungan Data Guard.
 
 Kapan Switchover Digunakan?  
