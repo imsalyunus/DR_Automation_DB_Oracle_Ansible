@@ -1,6 +1,25 @@
 ---
-- name: Query Oracle Database Role and Switchover Status
-  hosts: ora19cdg02.bwok.org
+- hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: "Tampilkan data dari STANDBY"
+      debug:
+        msg: "{{ standby_db }}"
+
+    - name: "Tampilkan data dari PRIMARY"
+      debug:
+        msg: "{{ primary_db }}"
+
+    - name: "Debug nilai primary_db"
+      debug:
+        msg: "Primary DB is set to: {{ primary_db }}"
+
+    - name: "Debug nilai standby_db"
+      debug:
+        msg: "Standby DB is set to: {{ standby_db }}"
+
+############################
+- hosts: "{{ primary_db }}"
   tasks:
     - name: Source the bash profile and set environment variables
       shell: |
@@ -8,24 +27,20 @@
         export ORACLE_HOME=/u01/app/oracle/product/19.3.0/dbhome_1
         export ORACLE_SID=orcl
         export PATH=$PATH:$ORACLE_HOME/bin
-
-        # Run SQL Query
         echo "SELECT inst_id, name, value FROM gv\$dataguard_stats WHERE name='apply lag';" | sqlplus -s / as sysdba
-      register: db_status_lag02
-      #ignore_errors: yes
+      register: db_status_lag01
 
     - name: Check if SQL query returned "no rows selected"
       fail:
         msg: "SQL query did not return 'no rows selected'. Process halted."
-      when: "'no rows selected' not in db_status_lag02.stdout"
+      when: "'no rows selected' not in db_status_lag01.stdout"
 
     - name: Output SQL query results
       debug:
-        msg: "{{ db_status_lag02.stdout }}"
-      when: "'no rows selected' in db_status_lag02.stdout"
+        msg: "{{ db_status_lag01.stdout }}"
+      when: "'no rows selected' in db_status_lag01.stdout"
 
-- name: Query Oracle Database Role and Switchover Status
-  hosts: ora19cdg01.bwok.org
+- hosts: "{{ standby_db }}"
   tasks:
     - name: Source the bash profile and set environment variables
       shell: |
@@ -33,27 +48,25 @@
         export ORACLE_HOME=/u01/app/oracle/product/19.3.0/dbhome_1
         export ORACLE_SID=orcl
         export PATH=$PATH:$ORACLE_HOME/bin
-
-        # Run SQL Query
         echo "SELECT inst_id, name, value FROM gv\$dataguard_stats WHERE name='apply lag';" | sqlplus -s / as sysdba
-      register: db_status_lag01
-      #ignore_errors: yes
+      register: db_status_lag02
 
     - name: Check if the query result contains the expected lag
       assert:
         that:
-          - "'1 apply lag' in db_status_lag01.stdout"
-          - "'+00 00:00:00' in db_status_lag01.stdout"
+          - "'1 apply lag' in db_status_lag02.stdout"
+          - "'+00 00:00:00' in db_status_lag02.stdout"
         fail_msg: "The query result does not contain the expected apply lag. Stopping playbook."
         success_msg: "Query result contains the expected apply lag. Proceeding with playbook."
 
     - name: Continue with the rest of the playbook
       debug:
         msg: "Query result verified. Proceeding with further tasks."
-      when: "'1 apply lag' in db_status_lag01.stdout and '+00 00:00:00' in db_status_lag01.stdout"
+      when: "'1 apply lag' in db_status_lag02.stdout and '+00 00:00:00' in db_status_lag02.stdout"
 
+######################################
 - name: Run Oracle Commands
-  hosts: ora19cdg02.bwok.org
+  hosts: "{{ primary_db }}"
   tasks:
     - name: Source the bash profile and set environment variables
       shell: |
@@ -61,13 +74,9 @@
         export ORACLE_HOME=/u01/app/oracle/product/19.3.0/dbhome_1
         export ORACLE_SID=orcl
         export PATH=$PATH:$ORACLE_HOME/bin
-
-        # Run SQL Commands
         for i in {1..3}; do
           echo "ALTER SYSTEM ARCHIVE LOG CURRENT;" | sqlplus -s / as sysdba
         done
-
-        # Run ARCHIVE LOG LIST
         echo "ARCHIVE LOG LIST;" | sqlplus -s / as sysdba
       register: db_switchlog
       #ignore_errors: yes
@@ -76,10 +85,11 @@
       debug:
         msg: "{{ db_switchlog.stdout_lines }}"
 
+#####################################
 - name: Query Oracle Database Role and Switchover Status
   hosts:
-    - ora19cdg01.bwok.org
-    - ora19cdg02.bwok.org
+    - "{{ primary_db }}"
+    - "{{ standby_db }}"
   tasks:
     - name: Source the bash profile and set environment variables
       shell: |
@@ -87,8 +97,6 @@
         export ORACLE_HOME=/u01/app/oracle/product/19.3.0/dbhome_1
         export ORACLE_SID=orcl
         export PATH=$PATH:$ORACLE_HOME/bin
-
-        # Run SQL Query
         sqlplus -s / as sysdba <<EOF
         SET PAGESIZE 0 FEEDBACK OFF VERIFY OFF HEADING OFF ECHO OFF
         SELECT (ARCH.SEQUENCE# - APPL.SEQUENCE#) AS Difference
@@ -131,10 +139,11 @@
         success_msg: "Results are the same, success!"
         fail_msg: "Results are different, failure!"
 
+##############################
 - name: Query Oracle Database Role and Switchover Status
   hosts:
-    - ora19cdg01.bwok.org
-    - ora19cdg02.bwok.org
+    - "{{ primary_db }}"
+    - "{{ standby_db }}"
   tasks:
     - name: Source the bash profile and set environment variables
       shell: |
@@ -142,8 +151,6 @@
         export ORACLE_HOME=/u01/app/oracle/product/19.3.0/dbhome_1
         export ORACLE_SID=orcl
         export PATH=$PATH:$ORACLE_HOME/bin
-
-        # Run SQL Query
         echo "SELECT log_mode, force_logging FROM v\$database;" | sqlplus -s / as sysdba
       register: db_force
       #ignore_errors: yes
@@ -162,8 +169,9 @@
         msg: "SQL query execution failed or status is not as expected on {{ inventory_hostname }}. Halting playbook."
       when: "'ARCHIVELOG' not in db_force.stdout or 'YES' not in db_force.stdout"
 
+#################################
 - name: Query Oracle Database Role and Switchover Status
-  hosts: ora19cdg01.bwok.org
+  hosts: "{{ standby_db }}"
   tasks:
     - name: Source the bash profile and set environment variables
       shell: |
@@ -171,8 +179,6 @@
         export ORACLE_HOME=/u01/app/oracle/product/19.3.0/dbhome_1
         export ORACLE_SID=orcl
         export PATH=$PATH:$ORACLE_HOME/bin
-
-        # Run SQL Query
         echo "SELECT process, status, sequence# FROM v\$managed_standby;" | sqlplus -s / as sysdba
       register: db_mrp
       #ignore_errors: yes
