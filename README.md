@@ -19,7 +19,7 @@
 ![image](https://github.com/user-attachments/assets/2bbd3df6-9032-4caf-8702-fb1b5c877fbb)
 
 ## 6. Cek gap/lag antara Primary dan Standby dengan perintah berikut: ##
-`SELECT inst_id, name, value FROM gv$dataguard_stats WHERE name='apply lag';`  
+`SELECT inst_id, name, value FROM gv$dataguard_stats WHERE name='apply lag';`
 ![image](https://github.com/user-attachments/assets/c8fc1054-42a4-4a35-a6c5-8bc0c64a3c5b)
 ![image](https://github.com/user-attachments/assets/8fbccccf-bf50-43f8-b375-d62f811733cb)
 *Di Primary, hasilnya harus "no rows selected"  
@@ -34,9 +34,11 @@
 
 ## 8. Lakukan Switchover dari Primary ke Standby: ##
 `ALTER DATABASE COMMIT TO SWITCHOVER TO STANDBY;`
+![image](https://github.com/user-attachments/assets/a0464d9a-9108-40a9-a813-94758ab6bfd9)
 
 ## 9. Startup Mount di Standby yang Baru: ##
 `STARTUP MOUNT;`
+
 
 ## 10. Verifikasi Status di Standby yang Baru: ##
 `SELECT name, open_mode, database_role FROM v$database;`
