@@ -11,41 +11,43 @@
 
 ## 4. Verifikasi Status Database: ##
 `SELECT database_role, switchover_status FROM v$database;`
+![image](https://github.com/user-attachments/assets/5754ab70-19e2-4813-a3f9-dcd1bd2f55e2)
+![image](https://github.com/user-attachments/assets/4f423772-fd6a-4a9c-a136-73faa1e56f32)
 
 ## 5. Di Standby, pastikan proses recovery sedang berjalan: ##
 `ALTER DATABASE RECOVER MANAGED STANDBY DATABASE DISCONNECT;`
+![image](https://github.com/user-attachments/assets/2bbd3df6-9032-4caf-8702-fb1b5c877fbb)
 
 ## 6. Cek gap/lag antara Primary dan Standby dengan perintah berikut: ##
 `SELECT inst_id, name, value FROM gv$dataguard_stats WHERE name='apply lag';`  
 ![image](https://github.com/user-attachments/assets/c8fc1054-42a4-4a35-a6c5-8bc0c64a3c5b)
-![image](https://github.com/user-attachments/assets/aeeb29f7-29f3-41b9-b157-31b49f5235b9)
+![image](https://github.com/user-attachments/assets/8fbccccf-bf50-43f8-b375-d62f811733cb)
 *Di Primary, hasilnya harus "no rows selected"  
 *Di Standby, akan terlihat apply lag jika ada keterlambatan replikasi
 
-## 7. Sinkronisasi Archive Log: ##
+## 7. Sinkronisasi & Cek daftar Archive Log: ##
 `ALTER SYSTEM ARCHIVE LOG CURRENT;`
 `ALTER SYSTEM ARCHIVE LOG CURRENT;`
 `ALTER SYSTEM ARCHIVE LOG CURRENT;`
-
-## 8. Cek daftar archive log: ##
 `ARCHIVE LOG LIST;`
+![image](https://github.com/user-attachments/assets/03194028-6638-40ee-91a5-63b0288fe503)
 
-## 9. Lakukan Switchover dari Primary ke Standby: ##
+## 8. Lakukan Switchover dari Primary ke Standby: ##
 `ALTER DATABASE COMMIT TO SWITCHOVER TO STANDBY;`
 
-## 10. Startup Mount di Standby yang Baru: ##
+## 9. Startup Mount di Standby yang Baru: ##
 `STARTUP MOUNT;`
 
-## 11. Verifikasi Status di Standby yang Baru: ##
+## 10. Verifikasi Status di Standby yang Baru: ##
 `SELECT name, open_mode, database_role FROM v$database;`
 
-## 12. Pastikan Standby Lama Siap Menjadi Primary: ##
+## 11. Pastikan Standby Lama Siap Menjadi Primary: ##
 `SELECT database_role, switchover_status FROM v$database;`
 
-## 13. Lakukan Switchover dari Standby ke Primary (di Standby Lama yang akan menjadi Primary): ##
+## 12. Lakukan Switchover dari Standby ke Primary (di Standby Lama yang akan menjadi Primary): ##
 `ALTER DATABASE COMMIT TO SWITCHOVER TO PRIMARY;`
 
-## 14. Open Database di Primary yang Baru: ##
+## 13. Open Database di Primary yang Baru: ##
 `ALTER DATABASE OPEN;`
 
 ## 15. Konfigurasi Log Archive di Primary yang Baru: ##
