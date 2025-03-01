@@ -11,9 +11,19 @@ Karena kedua database tetap sinkron selama proses ini, switchover memungkinkan t
 ![image](https://github.com/user-attachments/assets/7f1951e4-c71a-49bd-a08f-132d8fa972f3)
 ![image](https://github.com/user-attachments/assets/7dbf4758-505b-4ead-951d-d40f15b6830a)
 
+LOGIC DIAGRAM !!!
+![image](https://github.com/user-attachments/assets/09ef4723-eea5-487c-97da-c98a29600a8c)
+![image](https://github.com/user-attachments/assets/377b1a86-8b6c-4524-ac51-367aaa6e9b4e)
+
 #########################################################
 
 ![image](https://github.com/user-attachments/assets/b4ad322e-35b0-4f8d-ade5-1eeac69fe64b)
 ![image](https://github.com/user-attachments/assets/39224372-0719-4829-821a-451f784416f1)
+
+LOGIC DIAGRAM !!!
+![image](https://github.com/user-attachments/assets/aca8b4e1-3512-4566-bea4-68c933fffc2e)
+![image](https://github.com/user-attachments/assets/45b2afa5-b35d-4cd6-8874-aed0dd508ee2)
+
+
 
 
