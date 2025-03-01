@@ -3,19 +3,19 @@
 `su - oracle`  
 `. .bash_profile`
 
-3. Pastikan listener dalam keadaan aktif:
+## 2. Pastikan listener dalam keadaan aktif: ##
 `lsnrctl start`
 
-4. Masuk ke SQL*Plus:
+## 3. Masuk ke SQL*Plus: ##
 `sqlplus / as sysdba`
 
-5. Verifikasi Status Database:
+## 4. Verifikasi Status Database: ##
 `SELECT database_role, switchover_status FROM v$database;`
 
-6. Di Standby, pastikan proses recovery sedang berjalan:
+## 5. Di Standby, pastikan proses recovery sedang berjalan: ##
 `ALTER DATABASE RECOVER MANAGED STANDBY DATABASE DISCONNECT;`
 
-7. Cek gap/lag antara Primary dan Standby dengan perintah berikut:
+## 6. Cek gap/lag antara Primary dan Standby dengan perintah berikut: ##
 `SELECT inst_id, name, value FROM gv$dataguard_stats WHERE name='apply lag';`  
 *Di Primary, hasilnya harus "no rows selected"  
 *Di Standby, akan terlihat apply lag jika ada keterlambatan replikasi
