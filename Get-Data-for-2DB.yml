@@ -1,0 +1,92 @@
+---
+- name: CEK ROLE DB 1
+  hosts: ora19cdg01.bwok.org
+  tasks:
+    - name: Source the bash profile and set environment variables
+      shell: |
+        # Set Environment Variables
+        export ORACLE_HOME=/u01/app/oracle/product/19.3.0/dbhome_1
+        export ORACLE_SID=orcl
+        export PATH=$PATH:$ORACLE_HOME/bin
+        echo "SELECT database_role FROM v\$database;" | sqlplus -s / as sysdba
+      register: db1_role
+      ignore_errors: yes
+
+    - name: Display the output
+      debug: msg="{{ db1_role.stdout }}"
+
+    - name: Set db standby
+      set_stats:
+        data:
+          standby_db: ""
+
+    - name: Display database role for primary
+      debug:
+        msg: "db1"
+      register: prim
+      when: "'PRIMARY' in db1_role.stdout"
+
+    - name: Display database role for standby
+      debug:
+        msg: "db1"
+      register: stby
+      when: "'PHYSICAL STANDBY' in db1_role.stdout"
+
+    - name: Set db primary
+      set_stats:
+        data:
+          primary_db: "ora19cdg01.bwok.org"
+      when: "'PRIMARY' in db1_role.stdout"
+
+    - name: Set db standby
+      set_stats:
+        data:
+          standby_db: "ora19cdg01.bwok.org"
+      when: "'PHYSICAL STANDBY' in db1_role.stdout"
+
+#########################
+- name: CEK ROLE DB2
+  hosts: ora19cdg02.bwok.org
+ #become: yes
+  tasks:
+    - name: Source the bash profile and set environment variables
+      shell: |
+        # Set Environment Variables
+        export ORACLE_HOME=/u01/app/oracle/product/19.3.0/dbhome_1
+        export ORACLE_SID=orcl
+        export PATH=$PATH:$ORACLE_HOME/bin
+        echo "SELECT database_role FROM v\$database;" | sqlplus -s / as sysdba
+      register: db2_role
+      ignore_errors: yes
+
+    - name: Display the output
+      debug: msg="{{ db2_role.stdout }}"
+
+    - name: Set db standby
+      set_stats:
+        data:
+          standby_db: ""
+
+    - name: Display database role for primary
+      debug:
+        msg: "db2"
+      register: prim
+      when: "'PRIMARY' in db2_role.stdout"
+
+    - name: Display database role for standby
+      debug:
+        msg: "db2"
+      register: stby
+      when: "'PHYSICAL STANDBY' in db2_role.stdout"
+
+    - name: Set db primary
+      set_stats:
+        data:
+          primary_db: "ora19cdg02.bwok.org"
+      when: "'PRIMARY' in db2_role.stdout"
+
+    - name: Set db standby
+      set_stats:
+        data:
+          standby_db: "ora19cdg02.bwok.org"
+      when: "'PHYSICAL STANDBY' in db2_role.stdout"
